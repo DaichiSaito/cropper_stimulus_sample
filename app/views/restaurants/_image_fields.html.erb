@@ -1,0 +1,35 @@
+<div data-controller="image-preview" class="max-w-xs">
+  <%= content_tag :div, class: "nested-fields", data: { new_record: restaurant_image.object.new_record? } do %>
+    <div class="mb-3">
+      <%= restaurant_image.label :image, class: 'label' %>
+      <%= restaurant_image.file_field :image, 'data-action': "change->image-preview#changed" %>
+    </div>
+
+    <div class="mb-3">
+      <% if restaurant_image.object.new_record? %>
+        <img src="https://placehold.jp/320x180.png" data-image-preview-target="preview" />
+      <% else %>
+        <%= image_tag restaurant_image.object.image, 'data-image-preview-target': "preview" %>
+      <% end %>
+    </div>
+
+    <%#= daisyUIのモーダルはこう書くしかないらしい https://daisyui.com/components/modal/ %>
+    <input type="checkbox" class="modal-toggle" data-image-preview-target="modalTrigger" />
+
+    <div class="modal">
+      <label class="modal-box w-11/12 max-w-5xl">
+        <img src="#" data-image-preview-target="croppable">
+        <div class="modal-action">
+          <label class="btn" data-action="click->image-preview#crop">切り取り</label>
+        </div>
+      </label>
+    </div>
+    <div class="text-center">
+      <% style = restaurant_image.object.new_record? ? 'hidden' : 'visible' %>
+      <small><%= link_to '削除', '#', style: "visibility: #{style}", class: 'btn btn-error btn-sm', data: { action: 'click->nested-form#removeAssociation', image_preview_target: 'removeButton' } %></small>
+    </div>
+    <%= restaurant_image.hidden_field :base64_image, 'data-image-preview-target': 'croppedImageField' %>
+    <%= restaurant_image.hidden_field :_destroy %>
+  <% end %>
+</div>
+
